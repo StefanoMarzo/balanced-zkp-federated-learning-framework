@@ -153,6 +153,9 @@ def predict_row(df, row_n, model):
 def get_rnd_ethnicity():
     return random.choice(list(properties['ETHNICITIES'].values()))
 
+def get_rnd_gender():
+    return random.choice(list(properties['GENDERS'].values()))
+
 def macro_deviation(ref, vals):
     refs = [ref] * len(vals)
     sub = [r_i - v_i for r_i, v_i in zip(refs, vals)]
