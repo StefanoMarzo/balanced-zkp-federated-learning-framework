@@ -13,7 +13,7 @@ properties = {
         1: 'Black',
         2: 'Asian',
         3: 'Indian',
-        #4: 'Other'
+        4: 'Other'
     },
     
     # Gender labels
@@ -35,7 +35,7 @@ properties = {
     
     #Age range
     'age_min' : 0,
-    'age_max' : 49,
+    'age_max' : 39,
     'age_range' : lambda: properties['age_max'] - properties['age_min'],
     'age_bins' : 10,
     'bins' : lambda: create_bins(properties['age_min'], 
@@ -49,7 +49,7 @@ properties = {
     'feature_to_predict' : 'age',
 
     #Number of data samples
-    'data_samples' : 10000,
+    'data_samples' : 1000,
 
     #Randomness
     'seed' : 19101995,    
@@ -126,6 +126,9 @@ def one_hot_to_num(oh):
     M = max(oh)
     return oh.index(M)
 
+def one_hot_vect_to_class(ohv):
+    return [one_hot_to_num(n) for n in ohv]
+
 def convert_output(y_out):
     out = []
     for i in range(len(y_out)):
@@ -156,7 +159,7 @@ def get_rnd_ethnicity():
 def get_rnd_gender():
     return random.choice(list(properties['GENDERS'].values()))
 
-def macro_deviation(ref, vals):
+def macro_variance(ref, vals):
     refs = [ref] * len(vals)
     sub = [r_i - v_i for r_i, v_i in zip(refs, vals)]
-    return round(sum(list(map(lambda x : x**2 / (len(vals) - 1), sub)))**(.5), 6)
+    return round(sum(list(map(lambda x : x**2 / (len(vals) - 1), sub))), 6)

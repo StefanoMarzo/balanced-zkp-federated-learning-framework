@@ -11,7 +11,7 @@
 | Student names:      | Stefano Marzo, Royston Pinto                                    |
 | Student emails:     | stefano.marzo2@mail.dcu.ie, royston.pinto2@mail.dcu.ie          |
 | Chosen majors:      | Artificial Intelligence, Data Analytics                         |
-| Supervisor:         | Dr. Rob Brennan                                                 |
+| Supervisor:         | Dr. Rob Brennan, Dr. Lucy McKenna                               |
 | Date of submission: | 27-01-2022                                                      |
 
 ### Practicum Topic
