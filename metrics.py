@@ -35,11 +35,17 @@ def get_selection_rate(y_true, y_pred):
     return np.nan if len(cv) == 0 else sum(cv) / len(cv)
 
 def statistical_parity_difference(y_true_p, y_pred_p, y_true_u, y_pred_u):
-    return get_selection_rate(y_true_u, y_pred_u) - get_selection_rate(y_true_p, y_pred_p)
-
+    try:
+        return get_selection_rate(y_true_u, y_pred_u) - get_selection_rate(y_true_p, y_pred_p)
+    except:
+        return np.nan
+    
 def disparate_impact_ratio(y_true_p, y_pred_p, y_true_u, y_pred_u):
-    return get_selection_rate(y_true_u, y_pred_u) / get_selection_rate(y_true_p, y_pred_p)
-
+    try:
+        return get_selection_rate(y_true_u, y_pred_u) / get_selection_rate(y_true_p, y_pred_p)
+    except:
+        return np.nan
+    
 def get_metrics_data(metrics):
     metrics_df = pd.DataFrame()
     for m in metrics:

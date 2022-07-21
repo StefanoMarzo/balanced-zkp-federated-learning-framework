@@ -3,6 +3,7 @@ from PIL import Image
 import numpy as np
 from sklearn.model_selection import train_test_split
 import random
+import time
 
 # PROPERTIES #################################################################
 
@@ -49,10 +50,18 @@ properties = {
     'feature_to_predict' : 'age',
 
     #Number of data samples
-    'data_samples' : 1000,
+    'data_samples' : 10000,
+    'privileged_group_proportion': 0.85,
 
     #Randomness
     'seed' : 19101995,    
+    
+    #ZKP
+    'enable_zk': False,
+    
+    #Balanced training
+    'gap': 0.05,
+    'max_gap': 1,    
     
 }
 
@@ -80,6 +89,18 @@ def prepare_data(df_train, df_test):
     X_test = prepare_X(df_test)
     y_test = prepare_y(df_test)
     return X_train, y_train, X_test, y_test
+
+def create_ethnicity_X_y(dataset, ethnicity):
+    df = dataset[dataset['ethnicity'] == ethnicity]
+    ethn_X = prepare_X(df)
+    ethn_y = prepare_y(df)
+    return ethn_X, ethn_y
+
+def create_all_ethnicities_X_y(dataset):
+    ae = {}
+    for e in properties['ETHNICITIES'].values():
+        ae[e] = list(create_ethnicity_X_y(dataset, e))
+    return ae
 
 # GRAPHICS ###################################################################
 
@@ -163,3 +184,6 @@ def macro_variance(ref, vals):
     refs = [ref] * len(vals)
     sub = [r_i - v_i for r_i, v_i in zip(refs, vals)]
     return round(sum(list(map(lambda x : x**2 / (len(vals) - 1), sub))), 6)
+
+def tm():
+    return time.time()
