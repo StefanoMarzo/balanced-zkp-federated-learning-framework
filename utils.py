@@ -23,6 +23,11 @@ properties = {
         1: 'Female'
     },
     
+    'features' : {
+        'ETHNICITY': ['White', 'Black', 'Asian', 'Indian'],
+        'GENDER': ['Male', 'Female']
+    },
+    
     'REVERSE_GENDERS' : {
         'Male' : 0,
         'Female' : 1
@@ -43,6 +48,10 @@ properties = {
                                  properties['age_bins'], 
                                  int(properties['age_range']() / properties['age_bins'])),
     
+    #Training model
+    'learning_rate' : 0.025,
+    'epochs_n' : 1,
+    
     #Train features
     #Use
     'feature_to_use' : 'pixels',
@@ -50,7 +59,7 @@ properties = {
     'feature_to_predict' : 'age',
 
     #Number of data samples
-    'data_samples' : 10000,
+    'data_samples' : 100000,
     'privileged_group_proportion': 0.85,
 
     #Randomness
@@ -62,6 +71,8 @@ properties = {
     #Balanced training
     'gap': 0.05,
     'max_gap': 1,    
+    
+    'test_size': 0.2,
     
 }
 
@@ -167,6 +178,7 @@ def print_summary(dataset, name='dataset'):
     axs[1].hist(dataset['ethnicity'], bins=5*2-1)
     axs[2].title.set_text('Gender')
     axs[2].hist(dataset['gender'], bins=2*2-1)
+    plt.show()
     
 def predict_row(df, row_n, model):
     row = df.loc[row_n:row_n]
@@ -183,7 +195,19 @@ def get_rnd_gender():
 def macro_variance(ref, vals):
     refs = [ref] * len(vals)
     sub = [r_i - v_i for r_i, v_i in zip(refs, vals)]
-    return round(sum(list(map(lambda x : x**2 / (len(vals) - 1), sub))), 6)
+    return np.round(sum(list(map(lambda x : x**2 / (len(vals) - 1), sub))), 6)
 
 def tm():
     return time.time()
+
+def plot_accuracy_comparison(mb, mu):
+    fig, axs = plt.subplots(1, 1, tight_layout=True, figsize=(4, 4))
+    xu = np.arange(len(mu.accuracy))
+    xb = np.arange(len(mb.accuracy))
+    #fig.suptitle('')
+    plt.ylim((0,1))
+    fig.suptitle('Accuracy')
+    axs.plot(xb, mb.accuracy, label='Self-balanced')
+    axs.plot(xu, mu.accuracy, label='Imbalanced', color='orange')
+    axs.legend(loc='lower right')
+    plt.show()

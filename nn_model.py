@@ -6,7 +6,9 @@
 
 #https://towardsdatascience.com/math-neural-network-from-scratch-in-python-d6da9f29ce65
 import numpy as np
+from utils import *
 from utils import properties as p
+import matplotlib.pyplot as plt
 
 
 # In[2]:
@@ -124,6 +126,11 @@ class Network:
         self.loss = None
         self.loss_prime = None
         self.errors = []
+        self.accuracy = []
+        self.correct = 0
+        self.num_samples_fit = 0
+        self.num_correct_fit = 0
+        self.num_fit_calls = 0
 
     # add layer to network
     def add(self, layer):
@@ -158,24 +165,32 @@ class Network:
         # training loop
         for i in range(epochs):
             err = 0
+            corr = 0
             for j in range(samples):
                 # forward propagation
                 output = x_train[j]
                 for layer in self.layers:
                     output = layer.forward_propagation(output)
-
+                
                 # compute loss (for display purpose only)
                 err += self.loss(y_train[j], output)
+                
+                if self.is_prediction_correct(y_train[j], output):
+                    self.num_correct_fit += 1
 
                 # backward propagation
                 error = self.loss_prime(y_train[j], output)
                 for layer in reversed(self.layers):
                     error = layer.backward_propagation(error, learning_rate)
-
-            # calculate average error on all samples
-            err /= samples
-            #print('epoch %d/%d   error=%f' % (i+1, epochs, err))
-            self.errors += [err]
+                    
+                self.num_samples_fit += 1
+                    
+        self.errors += [err / samples / epochs]                
+        self.accuracy += [self.num_correct_fit / self.num_samples_fit]            
+            
+            
+    def is_prediction_correct(self, y_true, y_pred):
+        return np.all(np.array(convert_output([np.array([y_pred])])) == np.array(y_true))
             
     def get_weights(self):
         return [self.layers[i].weights for i in range(0, len(self.layers), 2)]
@@ -183,13 +198,26 @@ class Network:
     def load_weights(self, W):
         for i in range(0, len(W)):
             self.layers[i * 2].weights = W[i] #One FCLayer every 2 layers
+            
+    def plot_accuracy_loss(self):
+        fig, axs = plt.subplots(1, 1, tight_layout=True, figsize=(5, 5))
+        plt.ylim((0,1))
+        x = np.arange(len(self.errors))
+        #fig.suptitle('')
+        axs.title.set_text('Accuracy')
+        axs.plot(x, self.accuracy)
+        plt.show()
+            
 
 def get_standard_nn(seed):
-    hidden_layer_size = 500
+    hidden_layer_size_1 = 96
+    hidden_layer_size_2 = 80
     net = Network(seed=p['seed'])
-    net.add(FCLayer(p['img_size'] * p['img_size'], hidden_layer_size))
+    net.add(FCLayer(p['img_size'] * p['img_size'], hidden_layer_size_1))
     net.add(ActivationLayer(sigm_act))
-    net.add(FCLayer(hidden_layer_size, round(p['age_range']() / p['age_bins'])))
+    #net.add(FCLayer(hidden_layer_size_1, hidden_layer_size_2))
+    #net.add(ActivationLayer(sigm_act))
+    net.add(FCLayer(hidden_layer_size_1, round(p['age_range']() / p['age_bins'])))
     net.add(ActivationLayer(sigm_act))
     # setup
     net.use(mse, mse_prime)
@@ -204,4 +232,3 @@ def get_3l_nn(inp=2, hid=2, out=1):
     # setup
     net.use(mse, mse_prime)
     return net
-    

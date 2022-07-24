@@ -31,8 +31,7 @@ def equal_odd_difference(y_true_p, y_pred_p, y_true_u, y_pred_u):
     return (rec_diff + fpr_u - fpr_p) / 2 
 
 def get_selection_rate(y_true, y_pred):
-    cv = [y_t == y_p for (y_t, y_p) in zip(y_true, y_pred)]
-    return np.nan if len(cv) == 0 else sum(cv) / len(cv)
+    return get_accuracy(y_true, y_pred)
 
 def statistical_parity_difference(y_true_p, y_pred_p, y_true_u, y_pred_u):
     try:
@@ -52,3 +51,7 @@ def get_metrics_data(metrics):
         row = pd.Series(m)
         metrics_df = metrics_df.append(row, ignore_index=True)
     return metrics_df
+
+def get_accuracy(y_true, y_pred):
+    cv = [y_t == y_p for (y_t, y_p) in zip(y_true, y_pred)]
+    return np.nan if len(cv) == 0 else sum(cv) / len(cv)
